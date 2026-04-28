@@ -17,6 +17,7 @@ import pandas as pd
 import yfinance as yf
 
 from adaptive_supertrend import get_trend_at_bar
+from squeeze_momentum import get_squeeze_label_at_bar
 
 warnings.filterwarnings("ignore")
 
@@ -345,6 +346,8 @@ def compute_market_signal(
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
                 "trend": "Long",
+                "squeeze_momentum": "Rise weak",
+                "squeeze_momentum2": "Rise weak",
             }
 
         df = data.dropna()
@@ -358,6 +361,8 @@ def compute_market_signal(
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
                 "trend": "Long",
+                "squeeze_momentum": "Rise weak",
+                "squeeze_momentum2": "Rise weak",
             }
 
         if len(df) < 60:
@@ -366,12 +371,13 @@ def compute_market_signal(
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
                 "trend": "Long",
+                "squeeze_momentum": "Rise weak",
+                "squeeze_momentum2": "Rise weak",
             }
 
         result = compute_signal_from_indicators(df)
 
         # Auto-compute Trend dari Adaptive SuperTrend (AlgoAlpha)
-        # Parameters: ATR=10, Factor=3, Training=100, Percentiles=0.75/0.5/0.25
         try:
             trend = get_trend_at_bar(
                 df,
@@ -384,8 +390,25 @@ def compute_market_signal(
             )
             result["trend"] = trend
         except Exception:
-            # Fallback: gunakan EMA crossover
             result["trend"] = "Long" if result.get("ema_fast_last", 0) > result.get("ema_slow_last", 0) else "Short"
+
+        # Auto-compute Squeeze Momentum (LazyBear)
+        # Default parameters: BB=20/2.0, KC=20/1.5
+        try:
+            sq_mom = get_squeeze_label_at_bar(df)
+            result["squeeze_momentum"] = sq_mom
+        except Exception:
+            result["squeeze_momentum"] = "Rise weak"
+
+        # Squeeze Momentum 2: sama tapi dengan parameter yang sedikit berbeda
+        # Menggunakan KC mult lebih ketat (1.0) untuk sensitivitas berbeda
+        try:
+            sq_mom2 = get_squeeze_label_at_bar(
+                df, bb_length=20, bb_mult=2.0, kc_length=20, kc_mult=1.0
+            )
+            result["squeeze_momentum2"] = sq_mom2
+        except Exception:
+            result["squeeze_momentum2"] = "Rise weak"
 
         result["error"] = None
         return result
@@ -396,4 +419,6 @@ def compute_market_signal(
             "score": 0, "last_tr": 0.0,
             "raw_position": "No Trade", "final_position": "No Trade",
             "trend": "Long",
+            "squeeze_momentum": "Rise weak",
+            "squeeze_momentum2": "Rise weak",
         }
