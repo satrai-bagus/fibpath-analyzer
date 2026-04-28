@@ -1,130 +1,48 @@
 """
 Adaptive SuperTrend Module
 --------------------------
-Implementasi Python dari indikator "Machine Learning Adaptive SuperTrend"
-oleh AlgoAlpha (TradingView).
+Implementasi Python yang PERSIS mengikuti Pine Script
+"Machine Learning Adaptive SuperTrend [AlgoAlpha]" dari TradingView.
 
-Menggunakan K-Means clustering untuk mengkategorikan volatilitas ATR
-ke dalam 3 cluster (High, Medium, Low), lalu mengadaptasi multiplier
-SuperTrend secara dinamis.
+Algoritma:
+1. Hitung ATR (Wilder's RMA)
+2. K-Means clustering pada trailing ATR window → 3 centroid (high/mid/low vol)
+3. Klasifikasi ATR bar saat ini → ambil centroid terdekat (assigned_centroid)
+4. SuperTrend dihitung dengan: factor * assigned_centroid (BUKAN factor * ATR)
+5. Direction: -1 = bullish (Long), 1 = bearish (Short)
 
-Output: "Long" atau "Short" berdasarkan arah SuperTrend.
+Output: "Long" atau "Short" per bar.
 """
 from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from typing import Optional
 
 
 # ============================
-# K-Means clustering (manual, seperti di Pine Script)
+# ATR menggunakan Wilder's RMA (sama dengan ta.atr di Pine Script)
 # ============================
-def _kmeans_cluster_atr(
-    atr_values: np.ndarray,
-    n_clusters: int = 3,
-    max_iter: int = 100,
-    init_percentiles: tuple = (0.75, 0.50, 0.25),
-) -> np.ndarray:
-    """
-    K-Means clustering sederhana untuk array ATR 1D.
-    Return: array centroids (high, mid, low) yang sudah sorted descending.
-    """
-    if len(atr_values) < n_clusters:
-        # Fallback: return evenly spaced centroids
-        return np.array([np.max(atr_values), np.median(atr_values), np.min(atr_values)])
+def _rma(values: np.ndarray, period: int) -> np.ndarray:
+    """Wilder's Moving Average (RMA) — sama dengan Pine Script ta.rma()."""
+    n = len(values)
+    result = np.full(n, np.nan)
 
-    # Initial centroids dari percentile
-    centroids = np.array([
-        np.percentile(atr_values, p * 100) for p in init_percentiles
-    ], dtype=float)
+    if n < period:
+        return result
 
-    for _ in range(max_iter):
-        # Assignment step: assign each point to nearest centroid
-        distances = np.abs(atr_values[:, None] - centroids[None, :])  # (N, 3)
-        labels = np.argmin(distances, axis=1)
+    # Seed dengan SMA
+    result[period - 1] = np.mean(values[:period])
 
-        # Update step: recalculate centroids
-        new_centroids = np.array([
-            atr_values[labels == k].mean() if np.any(labels == k) else centroids[k]
-            for k in range(n_clusters)
-        ])
+    # RMA: rma = (prev_rma * (period - 1) + current) / period
+    alpha = 1.0 / period
+    for i in range(period, n):
+        result[i] = result[i - 1] * (1 - alpha) + values[i] * alpha
 
-        # Check convergence
-        if np.allclose(centroids, new_centroids, atol=1e-10):
-            break
-        centroids = new_centroids
-
-    # Sort descending (high, mid, low)
-    centroids = np.sort(centroids)[::-1]
-    return centroids
+    return result
 
 
-# ============================
-# SuperTrend core calculation
-# ============================
-def _compute_supertrend(
-    high: np.ndarray,
-    low: np.ndarray,
-    close: np.ndarray,
-    atr: np.ndarray,
-    factor: float,
-) -> tuple:
-    """
-    Compute SuperTrend bands and direction.
-
-    Returns:
-        supertrend: np.ndarray - SuperTrend line values
-        direction: np.ndarray - 1 = bullish (Long), -1 = bearish (Short)
-    """
-    n = len(close)
-    hl2 = (high + low) / 2.0
-
-    upper_band = hl2 + factor * atr
-    lower_band = hl2 - factor * atr
-
-    supertrend = np.zeros(n)
-    direction = np.ones(n)  # 1 = bullish, -1 = bearish
-
-    supertrend[0] = upper_band[0]
-    direction[0] = -1  # start bearish
-
-    for i in range(1, n):
-        # Adjust bands based on previous values
-        if lower_band[i] > lower_band[i - 1] or close[i - 1] < lower_band[i - 1]:
-            pass  # keep current lower_band
-        else:
-            lower_band[i] = lower_band[i - 1]
-
-        if upper_band[i] < upper_band[i - 1] or close[i - 1] > upper_band[i - 1]:
-            pass  # keep current upper_band
-        else:
-            upper_band[i] = upper_band[i - 1]
-
-        # Determine direction
-        if direction[i - 1] == 1:  # was bullish
-            if close[i] < lower_band[i]:
-                direction[i] = -1
-                supertrend[i] = upper_band[i]
-            else:
-                direction[i] = 1
-                supertrend[i] = lower_band[i]
-        else:  # was bearish
-            if close[i] > upper_band[i]:
-                direction[i] = 1
-                supertrend[i] = lower_band[i]
-            else:
-                direction[i] = -1
-                supertrend[i] = upper_band[i]
-
-    return supertrend, direction
-
-
-# ============================
-# ATR calculation
-# ============================
-def _compute_atr(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 10) -> np.ndarray:
-    """Compute ATR using simple moving average (matching TradingView default)."""
+def _compute_atr_rma(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: int = 10) -> np.ndarray:
+    """ATR menggunakan RMA (Wilder's smoothing) — sama dengan ta.atr() Pine Script."""
     n = len(close)
     tr = np.zeros(n)
     tr[0] = high[0] - low[0]
@@ -136,20 +54,131 @@ def _compute_atr(high: np.ndarray, low: np.ndarray, close: np.ndarray, period: i
             abs(low[i] - close[i - 1]),
         )
 
-    # RMA (Wilder's smoothing) - same as TradingView's ta.atr
-    atr = np.zeros(n)
-    atr[:period] = np.nan
-
-    if n >= period:
-        atr[period - 1] = np.mean(tr[:period])
-        for i in range(period, n):
-            atr[i] = (atr[i - 1] * (period - 1) + tr[i]) / period
-
-    return atr
+    return _rma(tr, period)
 
 
 # ============================
-# MAIN: Adaptive SuperTrend
+# K-Means clustering — PERSIS seperti Pine Script
+# ============================
+def _kmeans_pine(
+    atr_window: np.ndarray,
+    init_high: float,
+    init_mid: float,
+    init_low: float,
+    max_iter: int = 1000,
+) -> tuple:
+    """
+    K-Means 3 cluster PERSIS seperti Pine Script.
+
+    Parameters:
+        atr_window: array ATR values dari training period
+        init_high/mid/low: initial centroid guesses (dari linear interpolasi)
+
+    Returns:
+        (centroid_high, centroid_mid, centroid_low, cluster_sizes)
+    """
+    c_a = init_high  # high vol centroid
+    c_b = init_mid   # mid vol centroid
+    c_c = init_low   # low vol centroid
+
+    for _ in range(max_iter):
+        # Assignment step
+        hv_vals = []
+        mv_vals = []
+        lv_vals = []
+
+        for val in atr_window:
+            d_a = abs(val - c_a)
+            d_b = abs(val - c_b)
+            d_c = abs(val - c_c)
+
+            # Pine Script: strict < comparisons (pertama yang paling kecil menang)
+            if d_a < d_b and d_a < d_c:
+                hv_vals.append(val)
+            elif d_b < d_a and d_b < d_c:
+                mv_vals.append(val)
+            elif d_c < d_a and d_c < d_b:
+                lv_vals.append(val)
+            # Kalau ada tie (jarak sama), Pine Script tidak assign ke manapun
+            # (karena semua kondisi pakai strict <)
+
+        # Update step
+        new_a = np.mean(hv_vals) if hv_vals else c_a
+        new_b = np.mean(mv_vals) if mv_vals else c_b
+        new_c = np.mean(lv_vals) if lv_vals else c_c
+
+        # Convergence check
+        if new_a == c_a and new_b == c_b and new_c == c_c:
+            break
+
+        c_a = new_a
+        c_b = new_b
+        c_c = new_c
+
+    sizes = (len(hv_vals), len(mv_vals), len(lv_vals))
+    return c_a, c_b, c_c, sizes
+
+
+# ============================
+# SuperTrend — PERSIS seperti pine_supertrend() di Pine Script
+# ============================
+def _pine_supertrend_step(
+    hl2: float,
+    close_val: float,
+    factor: float,
+    atr_val: float,
+    prev_lower: float,
+    prev_upper: float,
+    prev_close: float,
+    prev_st: float,
+    prev_dir: int,
+    is_first: bool,
+) -> tuple:
+    """
+    Satu step SuperTrend PERSIS seperti Pine Script.
+
+    Pine Script direction convention:
+        -1 = bullish (Long, harga di atas ST)
+         1 = bearish (Short, harga di bawah ST)
+
+    Returns: (supertrend_val, direction, lower_band, upper_band)
+    """
+    upper_band = hl2 + factor * atr_val
+    lower_band = hl2 - factor * atr_val
+
+    # Band adjustment (Pine Script logic)
+    if not is_first:
+        if lower_band > prev_lower or prev_close < prev_lower:
+            pass  # keep new lower_band
+        else:
+            lower_band = prev_lower
+
+        if upper_band < prev_upper or prev_close > prev_upper:
+            pass  # keep new upper_band
+        else:
+            upper_band = prev_upper
+
+    # Direction logic (Pine Script)
+    if is_first:
+        direction = 1  # start bearish
+    elif prev_st == prev_upper:
+        # Was bearish (ST was at upper band)
+        direction = -1 if close_val > upper_band else 1
+    else:
+        # Was bullish (ST was at lower band)
+        direction = 1 if close_val < lower_band else -1
+
+    # SuperTrend value
+    if direction == -1:
+        st = lower_band  # bullish → ST at lower band
+    else:
+        st = upper_band  # bearish → ST at upper band
+
+    return st, direction, lower_band, upper_band
+
+
+# ============================
+# MAIN: Adaptive SuperTrend (matching Pine Script exactly)
 # ============================
 def compute_adaptive_supertrend(
     df: pd.DataFrame,
@@ -161,31 +190,16 @@ def compute_adaptive_supertrend(
     lowvol_percentile: float = 0.25,
 ) -> pd.DataFrame:
     """
-    Compute the Adaptive SuperTrend with K-Means clustering.
+    Compute Adaptive SuperTrend — PERSIS seperti Pine Script AlgoAlpha.
 
-    Parameters
-    ----------
-    df : DataFrame with columns Open, High, Low, Close
-    atr_length : ATR period (default 10, matching user's TradingView setting)
-    factor : Base SuperTrend multiplier (default 3.0)
-    training_period : Lookback for K-Means training data (default 100)
-    highvol_percentile : Initial centroid guess for high volatility
-    midvol_percentile : Initial centroid guess for mid volatility
-    lowvol_percentile : Initial centroid guess for low volatility
-
-    Returns
-    -------
-    DataFrame with added columns:
-        - 'atr': ATR values
-        - 'volatility_cluster': 'High', 'Medium', 'Low'
-        - 'adaptive_factor': The adapted multiplier
-        - 'supertrend': SuperTrend line value
-        - 'trend_direction': 1 (bullish/Long) or -1 (bearish/Short)
-        - 'trend_label': 'Long' or 'Short'
+    Key difference dari SuperTrend biasa:
+    - Factor tetap 3.0
+    - ATR diganti dengan CENTROID dari K-Means cluster terdekat
+    - SuperTrend bands: hl2 ± factor * centroid (bukan hl2 ± factor * atr)
     """
     df = df.copy()
 
-    # Flatten multi-level columns if needed (yfinance sometimes returns MultiIndex)
+    # Flatten multi-level columns if needed
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
 
@@ -194,111 +208,105 @@ def compute_adaptive_supertrend(
     close = df["Close"].astype(float).values
     n = len(close)
 
-    # Step 1: Compute ATR
-    atr = _compute_atr(high, low, close, period=atr_length)
+    # Step 1: ATR via RMA (Wilder's)
+    atr = _compute_atr_rma(high, low, close, period=atr_length)
 
-    # Step 2: For each bar, run K-Means on trailing ATR window
-    # and determine adaptive factor
-    adaptive_factor = np.full(n, factor)
+    # Step 2: Per-bar K-Means + SuperTrend
+    supertrend = np.full(n, np.nan)
+    direction = np.ones(n, dtype=int)  # 1 = bearish default
     cluster_labels = np.full(n, "", dtype=object)
+    assigned_centroids = np.full(n, np.nan)
 
-    for i in range(training_period + atr_length, n):
-        # Get training window of valid ATR values
-        start_idx = max(0, i - training_period)
-        atr_window = atr[start_idx:i + 1]
-        valid_atr = atr_window[~np.isnan(atr_window)]
+    prev_lower = np.nan
+    prev_upper = np.nan
+    prev_st = np.nan
+    prev_dir = 1
+    first_valid = True
 
-        if len(valid_atr) < 10:
+    for i in range(n):
+        # Skip kalau ATR belum valid
+        if np.isnan(atr[i]):
             continue
 
-        # Run K-Means
-        centroids = _kmeans_cluster_atr(
-            valid_atr,
-            init_percentiles=(highvol_percentile, midvol_percentile, lowvol_percentile),
+        # K-Means clustering (hanya jika cukup data training)
+        if i >= training_period - 1:
+            # Training window: ATR values dari [i - training_period + 1] sampai [i]
+            start_idx = i - training_period + 1
+            atr_window = atr[start_idx:i + 1]
+            valid_atr = atr_window[~np.isnan(atr_window)]
+
+            if len(valid_atr) > 0:
+                # Initial guesses: linear interpolation (PERSIS Pine Script)
+                # upper = ta.highest(volatility, training_data_period)
+                # lower = ta.lowest(volatility, training_data_period)
+                # high_vol = lower + (upper - lower) * highvol_percentile
+                upper_atr = np.max(valid_atr)
+                lower_atr = np.min(valid_atr)
+                rng = upper_atr - lower_atr
+
+                init_high = lower_atr + rng * highvol_percentile
+                init_mid = lower_atr + rng * midvol_percentile
+                init_low = lower_atr + rng * lowvol_percentile
+
+                # Run K-Means
+                c_high, c_mid, c_low, sizes = _kmeans_pine(
+                    valid_atr, init_high, init_mid, init_low
+                )
+
+                # Classify current ATR → nearest centroid
+                current_atr = atr[i]
+                d_a = abs(current_atr - c_high)
+                d_b = abs(current_atr - c_mid)
+                d_c = abs(current_atr - c_low)
+
+                distances = [d_a, d_b, d_c]
+                centroids = [c_high, c_mid, c_low]
+                labels = ["High", "Medium", "Low"]
+
+                min_idx = int(np.argmin(distances))
+                centroid_val = centroids[min_idx]
+                cluster_labels[i] = labels[min_idx]
+                assigned_centroids[i] = centroid_val
+            else:
+                centroid_val = atr[i]
+                assigned_centroids[i] = centroid_val
+        else:
+            # Sebelum training period cukup, pakai ATR biasa
+            centroid_val = atr[i]
+            assigned_centroids[i] = centroid_val
+
+        # SuperTrend step
+        hl2 = (high[i] + low[i]) / 2.0
+        prev_close_val = close[i - 1] if i > 0 else close[i]
+
+        st, dir_val, lb, ub = _pine_supertrend_step(
+            hl2=hl2,
+            close_val=close[i],
+            factor=factor,
+            atr_val=centroid_val,  # KEY: pakai centroid, bukan raw ATR
+            prev_lower=prev_lower if not np.isnan(prev_lower) else lb if 'lb' in dir() else 0,
+            prev_upper=prev_upper if not np.isnan(prev_upper) else ub if 'ub' in dir() else 0,
+            prev_close=prev_close_val,
+            prev_st=prev_st if not np.isnan(prev_st) else 0,
+            prev_dir=prev_dir,
+            is_first=first_valid,
         )
 
-        # Classify current ATR
-        current_atr = atr[i]
-        if np.isnan(current_atr):
-            continue
+        supertrend[i] = st
+        direction[i] = dir_val
+        prev_lower = lb
+        prev_upper = ub
+        prev_st = st
+        prev_dir = dir_val
+        first_valid = False
 
-        distances = np.abs(current_atr - centroids)
-        cluster_idx = np.argmin(distances)
-
-        # Map cluster to factor adjustment
-        # High volatility -> lower factor (tighter, catch reversals faster)
-        # Low volatility -> higher factor (wider, avoid false signals)
-        if cluster_idx == 0:  # High volatility
-            cluster_labels[i] = "High"
-            adaptive_factor[i] = factor * 0.75  # tighter
-        elif cluster_idx == 1:  # Medium volatility
-            cluster_labels[i] = "Medium"
-            adaptive_factor[i] = factor * 1.0  # normal
-        else:  # Low volatility
-            cluster_labels[i] = "Low"
-            adaptive_factor[i] = factor * 1.25  # wider
-
-    # Step 3: Compute SuperTrend with adaptive factor
-    # We need to compute bar-by-bar since factor changes
-    hl2 = (high + low) / 2.0
-    upper_band = hl2 + adaptive_factor * atr
-    lower_band = hl2 - adaptive_factor * atr
-
-    # Handle NaN in ATR
-    upper_band = np.where(np.isnan(atr), np.nan, upper_band)
-    lower_band = np.where(np.isnan(atr), np.nan, lower_band)
-
-    supertrend = np.zeros(n)
-    direction = np.ones(n)
-
-    # Find first valid index
-    first_valid = atr_length
-    if first_valid < n:
-        supertrend[first_valid] = upper_band[first_valid]
-        direction[first_valid] = -1
-
-    for i in range(first_valid + 1, n):
-        if np.isnan(upper_band[i]) or np.isnan(lower_band[i]):
-            supertrend[i] = supertrend[i - 1]
-            direction[i] = direction[i - 1]
-            continue
-
-        # Adjust bands
-        if not np.isnan(lower_band[i - 1]):
-            if lower_band[i] > lower_band[i - 1] or close[i - 1] < lower_band[i - 1]:
-                pass
-            else:
-                lower_band[i] = lower_band[i - 1]
-
-        if not np.isnan(upper_band[i - 1]):
-            if upper_band[i] < upper_band[i - 1] or close[i - 1] > upper_band[i - 1]:
-                pass
-            else:
-                upper_band[i] = upper_band[i - 1]
-
-        # Direction logic
-        if direction[i - 1] == 1:  # was bullish
-            if close[i] < lower_band[i]:
-                direction[i] = -1
-                supertrend[i] = upper_band[i]
-            else:
-                direction[i] = 1
-                supertrend[i] = lower_band[i]
-        else:  # was bearish
-            if close[i] > upper_band[i]:
-                direction[i] = 1
-                supertrend[i] = lower_band[i]
-            else:
-                direction[i] = -1
-                supertrend[i] = upper_band[i]
-
-    # Build result
+    # Pine Script: dir == -1 → bullish (Long), dir == 1 → bearish (Short)
     df["atr"] = atr
     df["volatility_cluster"] = cluster_labels
-    df["adaptive_factor"] = adaptive_factor
+    df["assigned_centroid"] = assigned_centroids
     df["supertrend"] = supertrend
     df["trend_direction"] = direction
-    df["trend_label"] = np.where(direction == 1, "Long", "Short")
+    df["trend_label"] = np.where(direction == -1, "Long", "Short")
 
     return df
 
@@ -313,11 +321,8 @@ def get_trend_at_bar(
     lowvol_percentile: float = 0.25,
 ) -> str:
     """
-    Convenience function: compute Adaptive SuperTrend and return
-    the trend at the LAST bar as 'Long' or 'Short'.
-
-    Parameters match the user's TradingView settings:
-    AlgoAlpha Adaptive SuperTrend 10 3 100 0.75 0.5 0.25
+    Convenience: compute Adaptive SuperTrend dan return trend bar terakhir.
+    "Long" atau "Short".
     """
     result = compute_adaptive_supertrend(
         df,
@@ -330,6 +335,6 @@ def get_trend_at_bar(
     )
 
     if result.empty:
-        return "Long"  # fallback
+        return "Long"
 
     return str(result["trend_label"].iloc[-1])
