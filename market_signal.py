@@ -16,6 +16,8 @@ import numpy as np
 import pandas as pd
 import yfinance as yf
 
+from adaptive_supertrend import get_trend_at_bar
+
 warnings.filterwarnings("ignore")
 
 # ============================
@@ -342,6 +344,7 @@ def compute_market_signal(
                 "error": "Data kosong. Coba ubah tanggal/ticker.",
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
+                "trend": "Long",
             }
 
         df = data.dropna()
@@ -354,6 +357,7 @@ def compute_market_signal(
                 "error": "Setelah buang candle LIVE, data jadi kosong.",
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
+                "trend": "Long",
             }
 
         if len(df) < 60:
@@ -361,9 +365,28 @@ def compute_market_signal(
                 "error": f"Data terlalu sedikit ({len(df)} bar, butuh minimal 60).",
                 "score": 0, "last_tr": 0.0,
                 "raw_position": "No Trade", "final_position": "No Trade",
+                "trend": "Long",
             }
 
         result = compute_signal_from_indicators(df)
+
+        # Auto-compute Trend dari Adaptive SuperTrend (AlgoAlpha)
+        # Parameters: ATR=10, Factor=3, Training=100, Percentiles=0.75/0.5/0.25
+        try:
+            trend = get_trend_at_bar(
+                df,
+                atr_length=10,
+                factor=3.0,
+                training_period=100,
+                highvol_percentile=0.75,
+                midvol_percentile=0.50,
+                lowvol_percentile=0.25,
+            )
+            result["trend"] = trend
+        except Exception:
+            # Fallback: gunakan EMA crossover
+            result["trend"] = "Long" if result.get("ema_fast_last", 0) > result.get("ema_slow_last", 0) else "Short"
+
         result["error"] = None
         return result
 
@@ -372,4 +395,5 @@ def compute_market_signal(
             "error": f"Error saat mengambil data: {str(e)}",
             "score": 0, "last_tr": 0.0,
             "raw_position": "No Trade", "final_position": "No Trade",
+            "trend": "Long",
         }

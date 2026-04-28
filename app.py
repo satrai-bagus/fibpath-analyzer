@@ -133,13 +133,11 @@ with st.form('input_form'):
 
     st.markdown('---')
     st.subheader('📊 Input Manual (Observasi Chart)')
-    c1, c2, c3 = st.columns(3)
+    c1, c2 = st.columns(2)
     with c1:
-        trend_val = st.selectbox('Trend', options=ops['trends'] or ['Long', 'Short'])
-    with c2:
         sq_mom_val = st.selectbox('Squeeze Momentum', options=ops['sq_moms'] or ['Rise weak'])
         sq_mom2_val = st.selectbox('Squeeze Momentum2', options=ops['sq_mom2s'] or ['Rise weak'])
-    with c3:
+    with c2:
         bar1_val = st.selectbox('Bar 1', options=ops['bars'] or ['Red Bar Line 1'])
         bar2_val = st.selectbox('Bar 2', options=ops['bars'] or ['Red Bar Line 1'])
 
@@ -165,16 +163,18 @@ if submitted:
     last_tr_val = market_result['last_tr']
     raw_pos_val = market_result['raw_position']
     fin_pos_val = market_result['final_position']
+    trend_val = market_result.get('trend', 'Long')
 
     # Tampilkan hasil auto-compute
     st.divider()
     st.subheader('🤖 Hasil Auto-Compute dari Market Data')
 
-    ac1, ac2, ac3, ac4 = st.columns(4)
-    ac1.metric('Score', f'{score_val}')
-    ac2.metric('Last TR', f'{last_tr_val:.4f}')
-    ac3.metric('Raw Position', raw_pos_val)
-    ac4.metric('Final Position', fin_pos_val)
+    ac1, ac2, ac3, ac4, ac5 = st.columns(5)
+    ac1.metric('📈 Trend (SuperTrend)', trend_val)
+    ac2.metric('Score', f'{score_val}')
+    ac3.metric('Last TR', f'{last_tr_val:.4f}')
+    ac4.metric('Raw Position', raw_pos_val)
+    ac5.metric('Final Position', fin_pos_val)
 
     with st.expander('📋 Detail Indikator Market', expanded=False):
         detail_cols = st.columns(4)
