@@ -1,0 +1,78 @@
+Trend,Squeeze Momentum,Squeeze Momentum2,Bar 1,Bar 2,Raw Position,Final Position,Score,match_count,p_first_1.61_UP,p_first_1.61_DOWN,p_first_2.5_UP,p_first_2.5_DOWN,p_first_3.6_UP,p_first_3.6_DOWN,p_first_TIE_SAME_BAR,p_first_NO_HIT_48H
+Long,Rise strong white,Rise strong white,Red Bar Line 6,Green Bar Line 5,Long,Long,5.0,3,0.3333333333333333,0.3333333333333333,0.0,0.0,0.0,0.0,0.3333333333333333,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 4,Green Bar Line 3,Long,Long,5.0,2,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong,Rise strong,Green Bar Line 6,Green Bar Line 6,Long,No Trade,5.0,2,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong,Green Bar Line 3,Green Bar Line 6,Long,Long,5.0,2,0.0,0.5,0.0,0.0,0.0,0.0,0.5,0.0
+Short,Fall strong white,Fall strong,Green Bar Line 6,Red Bar Line 6,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Green Bar Line 1,Green Bar Line 5,No Trade,No Trade,0.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong white,Rise weak white,Red Bar Line 6,Red Bar Line 4,Short,No Trade,-1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong white,Fall strong white,Red Bar Line 5,Green Bar Line 1,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong white,Fall strong white,Red Bar Line 2,Green Bar Line 6,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong white,Fall strong white,Green Bar Line 4,Green Bar Line 1,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong white,Fall strong white,Green Bar Line 1,Green Bar Line 2,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Fall strong,Fall strong,Green Bar Line 3,Red Bar Line 5,Short,Short,-1.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall strong white,Fall strong,Green Bar Line 4,Red Bar Line 1,Short,Short,-3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall weak,Fall weak,Green Bar Line 4,Red Bar Line 5,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall strong,Fall strong,Red Bar Line 6,Red Bar Line 5,Short,No Trade,-3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 6,Red Bar Line 4,Long,Long,1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 6,Red Bar Line 1,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 6,Green Bar Line 6,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 5,Red Bar Line 4,Long,Long,2.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 4,Red Bar Line 5,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall strong,Fall weak,Red Bar Line 5,Red Bar Line 4,Short,Short,-5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Green Bar Line 5,Red Bar Line 2,Short,Short,-3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 4,Green Bar Line 5,Short,Short,-1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Green Bar Line 5,Red Bar Line 4,Long,Long,1.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Rise weak,Rise weak,Green Bar Line 4,Green Bar Line 4,Short,Short,-2.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Rise strong,Rise weak,Green Bar Line 6,Green Bar Line 4,Long,Long,1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Rise strong,Rise strong,Red Bar Line 4,Red Bar Line 1,Short,Short,-4.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Rise strong,Fall strong,Green Bar Line 6,Red Bar Line 5,Long,No Trade,1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak white,Fall weak white,Green Bar Line 2,Green Bar Line 6,Short,No Trade,-3.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall weak white,Fall strong white,Green Bar Line 6,Red Bar Line 4,Short,Short,-5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak white,Fall strong white,Green Bar Line 5,Red Bar Line 2,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak white,Green Bar Line 5,Green Bar Line 5,Short,Short,-3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 6,Red Bar Line 1,Short,Short,-1.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 4,Red Bar Line 3,Short,Short,-3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 4,Red Bar Line 2,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 3,Red Bar Line 1,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 2,Green Bar Line 4,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Red Bar Line 2,Green Bar Line 1,Short,Short,-3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Fall weak,Fall weak,Green Bar Line 6,Red Bar Line 1,Short,Short,-5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 4,Red Bar Line 2,Long,Long,1.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 3,Red Bar Line 6,Long,Long,3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 4,Green Bar Line 2,Long,Long,3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 3,Red Bar Line 6,Short,Short,-1.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 6,Red Bar Line 1,Long,No Trade,3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 6,Green Bar Line 2,Long,No Trade,5.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 6,Green Bar Line 2,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 5,Red Bar Line 6,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 5,Red Bar Line 5,Long,Long,5.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 5,Red Bar Line 1,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 5,Green Bar Line 5,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 5,Green Bar Line 4,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 4,Red Bar Line 3,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 3,Green Bar Line 6,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 3,Green Bar Line 6,Long,Long,3.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Green Bar Line 2,Green Bar Line 5,Long,No Trade,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong,Fall weak,Green Bar Line 3,Green Bar Line 4,Long,Long,5.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Fall strong,Rise weak,Red Bar Line 4,Red Bar Line 6,Short,No Trade,-1.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Fall strong,Fall strong,Red Bar Line 5,Red Bar Line 4,Short,Short,-1.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 2,Green Bar Line 6,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 2,Red Bar Line 4,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 3,Green Bar Line 5,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise strong white,Red Bar Line 5,Red Bar Line 2,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Fall strong,Fall strong,Red Bar Line 5,Green Bar Line 3,Short,Short,-1.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Red Bar Line 2,Red Bar Line 6,Long,Long,3.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Green Bar Line 6,Red Bar Line 4,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Green Bar Line 5,Red Bar Line 3,Short,Short,-1.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise weak white,Green Bar Line 2,Red Bar Line 3,Long,Long,3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise strong white,Red Bar Line 6,Green Bar Line 5,Long,Long,3.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak white,Rise strong white,Red Bar Line 3,Red Bar Line 6,Long,Long,3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 5,Red Bar Line 2,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak,Rise weak white,Green Bar Line 4,Red Bar Line 5,Long,No Trade,3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise weak,Rise weak,Red Bar Line 6,Red Bar Line 3,Long,Long,3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise weak,Rise weak,Red Bar Line 3,Green Bar Line 4,Long,Long,3.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Long,Rise strong white,Rise weak white,Green Bar Line 5,Red Bar Line 3,Long,Long,3.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 6,Green Bar Line 3,Long,Long,5.0,1,0.0,1.0,0.0,0.0,0.0,0.0,0.0,0.0
+Long,Rise strong white,Rise strong white,Red Bar Line 5,Red Bar Line 4,Long,Long,5.0,1,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0
+Short,Rise weak,Rise weak,Green Bar Line 4,Red Bar Line 1,Short,Short,-4.0,1,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0
