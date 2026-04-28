@@ -1,8 +1,10 @@
 import streamlit as st
 import pandas as pd
 from pathlib import Path
+from datetime import datetime, date
 
 from fib_pattern_engine_v2 import FibPatternEngineV2, train_and_save_model_v2
+from market_signal import compute_market_signal
 
 st.set_page_config(page_title='Fib Path Analyzer V2', layout='wide', page_icon='📈')
 
@@ -119,25 +121,77 @@ except Exception as e:
 
 ops = get_unique_options(EXCEL_PATH)
 
-st.header('📝 Setup Input Baru')
 with st.form('input_form'):
+    st.subheader('🌐 Data Market (Auto-Compute)')
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        ticker_val = st.text_input('Ticker Crypto', value='ETH-USD', help='Contoh: ETH-USD, BTC-USD, SOL-USD')
+    with m2:
+        date_val = st.date_input('Tanggal Analisis', value=date.today())
+    with m3:
+        hour_val = st.slider('Jam (UTC)', min_value=0, max_value=23, value=0, help='Jam dalam UTC (0-23)')
+
+    st.markdown('---')
+    st.subheader('📊 Input Manual (Observasi Chart)')
     c1, c2, c3 = st.columns(3)
     with c1:
         trend_val = st.selectbox('Trend', options=ops['trends'] or ['Long', 'Short'])
-        raw_pos_val = st.selectbox('Raw Position', options=ops['positions'] or ['Long', 'Short', 'No Trade'])
-        fin_pos_val = st.selectbox('Final Position', options=ops['positions'] or ['Long', 'Short', 'No Trade'])
     with c2:
         sq_mom_val = st.selectbox('Squeeze Momentum', options=ops['sq_moms'] or ['Rise weak'])
         sq_mom2_val = st.selectbox('Squeeze Momentum2', options=ops['sq_mom2s'] or ['Rise weak'])
+    with c3:
         bar1_val = st.selectbox('Bar 1', options=ops['bars'] or ['Red Bar Line 1'])
         bar2_val = st.selectbox('Bar 2', options=ops['bars'] or ['Red Bar Line 1'])
-    with c3:
-        score_val = st.number_input('Score', value=3.0, step=1.0)
-        last_tr_val = st.number_input('Last TR', value=10.0, step=0.1)
 
     submitted = st.form_submit_button('🔮 Jalankan Prediksi', use_container_width=True)
 
 if submitted:
+    # ============================
+    # Auto-compute Score, Last TR, Raw Position, Final Position
+    # ============================
+    with st.spinner('📡 Mengambil data market dan menghitung indikator...'):
+        market_result = compute_market_signal(
+            ticker=ticker_val,
+            target_date=date_val,
+            target_hour=hour_val,
+        )
+
+    # Cek error
+    if market_result.get('error'):
+        st.error(f"⚠️ {market_result['error']}")
+        st.stop()
+
+    score_val = market_result['score']
+    last_tr_val = market_result['last_tr']
+    raw_pos_val = market_result['raw_position']
+    fin_pos_val = market_result['final_position']
+
+    # Tampilkan hasil auto-compute
+    st.divider()
+    st.subheader('🤖 Hasil Auto-Compute dari Market Data')
+
+    ac1, ac2, ac3, ac4 = st.columns(4)
+    ac1.metric('Score', f'{score_val}')
+    ac2.metric('Last TR', f'{last_tr_val:.4f}')
+    ac3.metric('Raw Position', raw_pos_val)
+    ac4.metric('Final Position', fin_pos_val)
+
+    with st.expander('📋 Detail Indikator Market', expanded=False):
+        detail_cols = st.columns(4)
+        detail_cols[0].metric('Last Close', f"{market_result.get('last_close', 0):.2f}")
+        detail_cols[1].metric('RSI', f"{market_result.get('rsi_last', 0):.2f}")
+        detail_cols[2].metric('ADX', f"{market_result.get('adx_last', 0):.2f}")
+        detail_cols[3].metric('ATR', f"{market_result.get('atr_last', 0):.4f}")
+
+        detail_cols2 = st.columns(4)
+        detail_cols2[0].metric('EMA Fast', f"{market_result.get('ema_fast_last', 0):.2f}")
+        detail_cols2[1].metric('EMA Slow', f"{market_result.get('ema_slow_last', 0):.2f}")
+        detail_cols2[2].metric('MACD', f"{market_result.get('macd_last', 0):.4f}")
+        detail_cols2[3].metric('Filter', market_result.get('filter_reason', '-'))
+
+    # ============================
+    # Jalankan prediksi FibPatternEngineV2
+    # ============================
     setup_data = {
         'Trend': trend_val,
         'Squeeze Momentum': sq_mom_val,
