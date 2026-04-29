@@ -99,15 +99,16 @@ def compute_squeeze_momentum(
     # ============================
     # Bollinger Bands
     # ============================
-    # basis = SMA(close, length)
-    # dev = mult * stdev(close, length)
-    # Note: Pine Script stdev uses population stdev (ddof=0) by default
+    # PENTING: Di Pine Script LazyBear, BB deviation SALAH pakai multKC:
+    #   dev = multKC * stdev(source, length)   ← bukan mult!
+    # Ini quirk di script asli yang bikin BB lebih sempit → squeeze lebih sering.
+    # Kita replikasi persis agar hasil cocok dengan TradingView.
     basis = np.full(n, np.nan)
     bb_dev = np.full(n, np.nan)
     for i in range(bb_length - 1, n):
         window = close[i - bb_length + 1: i + 1]
         basis[i] = np.mean(window)
-        bb_dev[i] = bb_mult * np.std(window, ddof=0)
+        bb_dev[i] = kc_mult * np.std(window, ddof=0)  # pakai kc_mult, BUKAN bb_mult!
 
     upper_bb = basis + bb_dev
     lower_bb = basis - bb_dev

@@ -1,7 +1,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **FibPath Analyzer V2** (211 symbols, 361 relationships, 13 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **fibpath-analyzer** (442 symbols, 644 relationships, 22 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -24,10 +24,10 @@ This project is indexed by GitNexus as **FibPath Analyzer V2** (211 symbols, 361
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/FibPath Analyzer V2/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/FibPath Analyzer V2/clusters` | All functional areas |
-| `gitnexus://repo/FibPath Analyzer V2/processes` | All execution flows |
-| `gitnexus://repo/FibPath Analyzer V2/process/{name}` | Step-by-step execution trace |
+| `gitnexus://repo/fibpath-analyzer/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/fibpath-analyzer/clusters` | All functional areas |
+| `gitnexus://repo/fibpath-analyzer/processes` | All execution flows |
+| `gitnexus://repo/fibpath-analyzer/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

@@ -1,1 +1,10 @@
 .gitnexus
+__pycache__/
+*.pyc
+*.pkl
+*.csv
+outputs/
+models/
+_test_*.py
+undefined/
+.claude/
